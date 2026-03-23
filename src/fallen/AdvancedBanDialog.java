@@ -26,6 +26,9 @@ public class AdvancedBanDialog extends BaseDialog {
                 st.button("Attack", Styles.togglet, () -> currentScope = "attack").size(80, 40).group(sg);
                 st.button("Survival", Styles.togglet, () -> currentScope = "survival").size(80, 40).group(sg);
                 st.button("PvP", Styles.togglet, () -> currentScope = "pvp").size(80, 40).group(sg);
+
+                st.button("E_ATK", Styles.togglet, () -> currentScope = "eattack").size(80, 40).group(sg);
+                st.button("E_SRV", Styles.togglet, () -> currentScope = "esurvival").size(80, 40).group(sg);
             });
         }).row();
 
