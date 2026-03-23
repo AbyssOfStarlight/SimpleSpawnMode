@@ -22,6 +22,7 @@ public class SimpleAdminMode extends Mod {
 
     public SimpleAdminMode() {
         Events.on(ClientLoadEvent.class, e -> {
+            PlayerStatsTracker.init();
 
             adminList.build(Core.scene.root);
             setupTraceOverride(); // Первый запуск

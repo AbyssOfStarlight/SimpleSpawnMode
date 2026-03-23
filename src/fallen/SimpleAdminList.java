@@ -200,6 +200,12 @@ public class SimpleAdminList{
                                         user.uuid;
                 infoTable.add("[accent]UUID: [white]" + uuidText).growX().left();
 
+                if(Core.settings.getBool("sam-show-stats", false)) {
+                    infoTable.button(st -> {
+                        st.defaults().padLeft(2).padRight(2).fontScale(0.8f);
+                        st.add(new Label(() -> "[green]" + user.builds + "[]| [red]" + user.breaks + "[]| [sky]" + user.configs)).minWidth(60);
+                    }, Styles.flatBordert, () -> {}).right().height(24).padRight(4);
+                }
                 // Кнопки действий
                 if (user.online) {
                     infoTable.button(Icon.wavesSmall, Styles.cleari, () -> {

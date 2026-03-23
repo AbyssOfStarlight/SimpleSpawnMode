@@ -14,6 +14,9 @@ public class PlayerData {
     public String uuid;
     public boolean online;
     public Player player;
+    public int builds = 0;
+    public int breaks = 0;
+    public int configs = 0;
 
     // Для запросов
     public int traceAttempts = 0;
@@ -99,9 +102,13 @@ public class PlayerData {
         if (!uuid.equals("admin?")) {
             uuid = "Загрузка...";
         }
+        builds = 0;
+        breaks = 0;
+        configs = 0;
     }
 
     public void setUuid(String newUuid) {
+        if (newUuid == null || newUuid.isEmpty()) return;
         this.uuid = newUuid;
         stopTraceRequests();
     }
