@@ -148,7 +148,6 @@ public class SimpleAdminMode extends Mod {
     public class CustomTraceDialog extends TraceDialog {
         @Override
         public void show(Player player, Administration.TraceInfo info) {
-            boolean isAutoRequest = autoTraceRequested.remove(player.id);
 
             PlayerData data = playerHistory.get(player.id);
             if (data != null && info.uuid != null && !info.uuid.isEmpty()) {
