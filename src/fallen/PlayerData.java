@@ -47,6 +47,12 @@ public class PlayerData {
         traceTask = new arc.util.Timer.Task() {
             @Override
             public void run() {
+                // Если UUID внезапно пришел между тиками таймера — стопаем
+                if (uuid != null && !uuid.equals("Загрузка...") && !uuid.equals("admin?") && !uuid.equals("недоступен")) {
+                    cancel();
+                    traceTask = null;
+                    return;
+                }
                 traceAttempts++;
                 lastTraceRequest = Time.time;
 

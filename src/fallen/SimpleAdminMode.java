@@ -18,6 +18,7 @@ public class SimpleAdminMode extends Mod {
     private ObjectSet<Integer> autoTraceRequested = new ObjectSet<>();
     private IntSet knownPlayerIds = new IntSet();
     private static TraceDialog originalTraces;
+    private static ObjectMap<Integer, Float> lastAutoTime = new ObjectMap<>();
 
 
     public SimpleAdminMode() {
@@ -141,11 +142,16 @@ public class SimpleAdminMode extends Mod {
                 Log.info("SimpleAdminMode: UUID для @ = @", data.name, info.uuid);
             }
 
-            if (isAutoRequest) {
+            boolean wasAuto = autoTraceRequested.remove(player.id);
+            if (wasAuto) {
+                lastAutoTime.put(player.id, Time.time);
                 Log.info("📋 [accent]" + player.name + "[white]: " + (data != null && data.uuid.equals("admin?") ? "админ (локально)" : "данные получены"));
-            } else {
-                originalTraces.show(player, info);
             }
+            float lastTime = lastAutoTime.get(player.id, 0f);
+            if (Time.time - lastTime < 1f) {
+                return;
+            }
+            originalTraces.show(player, info);
         }
     }
 }
