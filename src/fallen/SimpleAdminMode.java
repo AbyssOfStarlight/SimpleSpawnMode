@@ -29,8 +29,22 @@ public class SimpleAdminMode extends Mod {
             setupTraceOverride(); // Первый запуск
 
             ui.hudGroup.fill(t -> {
-                t.right().margin(10).marginTop(60);
-                t.button(Icon.admin, () -> adminList.toggle()).size(50);
+                t.name = "sam-hud-button";
+                t.right();
+                // Создаем кнопку и сохраняем ссылку на её ячейку (Cell)
+                var cell = t.button(Icon.admin, () -> adminList.toggle()).size(50f);
+
+                final int[] lastY = {-1};
+
+                t.update(() -> {
+                    int currentY = Core.settings.getInt("sam-hud-y", 60);
+
+                    if (lastY[0] != currentY) {
+                        cell.padTop(currentY);
+                        lastY[0] = currentY;
+                        t.invalidateHierarchy(); // Заставляем таблицу пересчитать положение
+                    }
+                });
             });
         });
 

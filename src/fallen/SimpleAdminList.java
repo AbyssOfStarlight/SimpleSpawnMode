@@ -3,7 +3,6 @@ package fallen;
 import arc.*;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
-import arc.input.KeyCode;
 import arc.scene.*;
 import arc.scene.event.*;
 import arc.scene.ui.*;
@@ -11,7 +10,6 @@ import arc.scene.ui.ImageButton.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
-import mindustry.Vars;
 import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
@@ -26,11 +24,13 @@ import static mindustry.Vars.*;
 
 public class SimpleAdminList{
     public Table content = new Table().marginRight(13f).marginLeft(13f);
+    private Table mainTable;
     private boolean visible = false;
     private Interval timer = new Interval();
     private TextField search;
     private String manualUuid = "";
     private float button_size = 40f;
+    private float panelWidth = 400f;
 
     public void build(Group parent){
         content.name = "players";
@@ -58,7 +58,7 @@ public class SimpleAdminList{
                 }
             });
 
-            cont.table(Tex.buttonTrans, pane -> {
+            mainTable = cont.table(Tex.buttonTrans, pane -> {
                 pane.label(() -> Core.bundle.format(playerHistory.size == 1 ? "players.single" : "players", playerHistory.size));
                 pane.row();
 
@@ -103,10 +103,17 @@ public class SimpleAdminList{
                         }).size(45).padLeft(8).tooltip("Открыть меню бана для этого UUID");
 
                     }).padTop(10).row();
-                    menu.button("@close", this::toggle);
+                    menu.table(buttons -> {
+                        buttons.defaults().height(50f).fillY();
+                        buttons.button("@close", this::toggle).growX();
+                        buttons.button(Icon.settings, Styles.defaulti, () -> {
+                            new SimpleAdminSettings(this).show();
+                        }).width(50f).padLeft(4f);
+                    }).growX().padLeft(4f);
+
                 }).margin(0f).pad(10f).growX();
 
-            }).touchable(Touchable.enabled).margin(14f).minWidth(360f);
+            }).touchable(Touchable.enabled).margin(14f).minWidth(panelWidth).get();
         });
 
         rebuild();
@@ -121,6 +128,14 @@ public class SimpleAdminList{
     public void rebuild(){
 
         float h = 50f;
+        this.button_size = Core.settings.getInt("sam-btn-size", 40);
+        this.panelWidth = Core.settings.getInt("sam-list-w", 400);
+        if (mainTable != null) {
+            mainTable.setWidth(panelWidth);
+            mainTable.invalidate();
+        }
+        float buttonWidth = panelWidth - 60f;
+
         boolean found = false;
 
 
@@ -229,7 +244,7 @@ public class SimpleAdminList{
                 }).size(button_size).margin(2f).tooltip("Бан меню");
             }).growX();
 
-            content.add(button).width(340f).padBottom(4);
+            content.add(button).width(buttonWidth).padBottom(4);
             content.row();
         }
         if(!found){
