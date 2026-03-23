@@ -1,5 +1,16 @@
-# Mindustry Java Mod Template
-A Java Mindustry mod template that works on Android and PC. The Kotlin version of this mod can be seen [here](https://github.com/Anuken/MindustryKotlinModTemplate).
+# Simple Admin Mode
+Mod for easier tracking and banning
+
+# Main features
+Automatic UUID collection.
+
+Fast Ban Dialog.
+
+Real-time statistics, Demolition, Configuration.
+
+![yNfeHafgTGFeod0IynU1cDk-uBhMCkK7WwuMDw3X12gkeXpdqXWFYisGvHfZTEIy8NXyqp-TgxuhUIDnD4lDjOQ1](https://github.com/user-attachments/assets/a0a43cbd-e218-4577-b3de-ac483af410de)
+
+<img width="777" height="579" alt="image" src="https://github.com/user-attachments/assets/3eaeb8f6-9016-4f71-a24b-6d45ac3fe52c" />
 
 ## Building for Desktop Testing
 
