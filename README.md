@@ -6,7 +6,7 @@ Automatic UUID collection.
 
 Fast Ban Dialog.
 
-Real-time statistics, Demolition, Configuration.
+Real-time statistics: Construction, Demolition, Configuration.
 
 ![yNfeHafgTGFeod0IynU1cDk-uBhMCkK7WwuMDw3X12gkeXpdqXWFYisGvHfZTEIy8NXyqp-TgxuhUIDnD4lDjOQ1](https://github.com/user-attachments/assets/a0a43cbd-e218-4577-b3de-ac483af410de)
 
