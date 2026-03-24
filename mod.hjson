@@ -5,16 +5,16 @@ displayName: "SimpleAdminMode"
 name: "sam-java-mod"
 
 #your name
-author: "You"
+author: "FD"
 
 #the fully qualified main class of the mod
 main: "fallen.SimpleAdminMode"
 
 #the mod description as seen in the mod dialog
-description: "A Mindustry Java mod template."
+description: "Mod for easier tracking and banning."
 
 #the mod version
-version: 1.0
+version: 1.1
 
 #the minimum game build required to run this mod
 minGameVersion: 155
