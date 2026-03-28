@@ -3,6 +3,7 @@ package fallen;
 import arc.*;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
+import arc.input.KeyCode;
 import arc.scene.*;
 import arc.scene.event.*;
 import arc.scene.ui.*;
@@ -25,6 +26,7 @@ import static mindustry.Vars.*;
 public class SimpleAdminList{
     public Table content = new Table().marginRight(13f).marginLeft(13f);
     private Table mainTable;
+    private Table infoPanel;
     private boolean visible = false;
     private Interval timer = new Interval();
     private TextField search;
@@ -190,12 +192,12 @@ public class SimpleAdminList{
                 // Имя игрока (занимает всё доступное место)
                 nameTable.add(user.name).left().growX().wrap();
 
-                if (user.online) {
-                    nameTable.button(Icon.refresh, Styles.cleari, () -> {
-                        Player p = Groups.player.getByID(user.id);
-                        if (p != null) Call.adminRequest(p, Packets.AdminAction.trace, null);
-                    }).size(button_size).margin(2f).tooltip("Обновить UUID");
-                }
+                nameTable.button(Icon.info, Styles.cleari, () -> {
+                    showInfoPanel(user);
+                    if(Core.settings.getBool("sam-close-list")){
+                        this.toggle();
+                    }
+                }).size(button_size).margin(2f).tooltip("Просмотреть сохраненные данные");
 
                 // Кнопка меню (только для онлайн)
                 if (user.online) {
@@ -300,6 +302,100 @@ public class SimpleAdminList{
             Core.scene.setKeyboardFocus(null);
             search.clearText();
         }
+    }
+
+
+    private void showInfoPanel(PlayerData data) {
+        if(infoPanel != null) infoPanel.remove();
+
+        infoPanel = new Table();
+        infoPanel.setFillParent(true);
+        infoPanel.touchable = Touchable.enabled;
+        infoPanel.clicked(() -> {
+            if(Core.settings.getBool("sam-close-outside", true)){
+                infoPanel.remove();
+                infoPanel = null;
+            }
+        });
+
+        infoPanel.table(Tex.buttonTrans, t -> {
+            t.touchable = Touchable.enabled;
+            t.clicked(() -> {});
+
+            t.addListener(new arc.scene.event.InputListener() {
+                @Override
+                public boolean touchDown(arc.scene.event.InputEvent event, float x, float y, int pointer, arc.input.KeyCode button) {
+                    event.stop();
+                    return true;
+                }
+            });
+
+            t.margin(12).defaults().left();
+
+            t.table(h -> {
+                h.add(new Image(Icon.infoSmall)).padRight(8);
+                h.add("[accent]Инфо: " + data.name).growX();
+                h.button(Icon.leftOpen, Styles.cleari, () -> {
+                    infoPanel.remove();
+                    infoPanel = null;
+                    this.toggle();
+                }).size(32);
+                h.button(Icon.cancel, Styles.cleari, () -> {
+                    infoPanel.remove();
+                    infoPanel = null;
+                }).size(32);
+            }).growX().row();
+
+            t.image().color(Pal.accent).fillX().height(2).padTop(4).padBottom(8).row();
+
+            t.pane(p -> {
+                p.defaults().left().growX().margin(2);
+
+                addCopyRow(p, "Name", data.name);
+                addCopyRow(p, "UUID", data.uuid);
+                addCopyRow(p, "IP", data.ip);
+                addCopyRow(p, "Язык", data.locale);
+                addCopyRow(p, "Входы", String.valueOf(data.timesJoined));
+                addCopyRow(p, "Кики", String.valueOf(data.timesKicked));
+                addCopyRow(p, "Мобила", data.mobile ? "Да" : "Нет");
+                addCopyRow(p, "Моды", data.modded ? "Да" : "Нет");
+
+                if(data.names.length > 1) {
+                    p.add("[gray]История имен:").padTop(8).row();
+                    for(String s : data.names) addCopyRow(p, "", s);
+                }
+
+                if(data.ips.length > 1) {
+                    p.add("[gray]История IP:").padTop(8).row();
+                    for(String s : data.ips) addCopyRow(p, "", s);
+                }
+            }).size(340, 300).row();
+
+            if(data.online) {
+                t.button("ОБНОВИТЬ", Icon.refresh, () -> {
+                    Player p = Groups.player.getByID(data.id);
+                    if(p != null) Call.adminRequest(p, Packets.AdminAction.trace, null);
+                    infoPanel.remove();
+                }).margin(10).growX().height(45).padTop(10);
+            }
+
+        }).center();
+
+        Core.scene.add(infoPanel);
+    }
+
+    private void addCopyRow(Table table, String label, String value) {
+        if(value == null || value.isEmpty()) return;
+
+        String displayText = label.isEmpty() ? "[white]" + value : "[lightgray]" + label + ": [accent]" + value;
+
+        table.button(b -> {
+            b.left().margin(4);
+            b.add(displayText).left().wrap().growX().fontScale(0.9f);
+        }, Styles.flatBordert, () -> {
+            Core.app.setClipboardText(value);
+            ui.showInfoFade("[accent]" + (label.isEmpty() ? value : label) + " [white]скопирован");
+        }).growX().height(32).padBottom(2).row();
     }
 
 }

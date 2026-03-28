@@ -17,6 +17,12 @@ public class PlayerData {
     public int builds = 0;
     public int breaks = 0;
     public int configs = 0;
+    public String ip = "неизвестно";
+    public String locale = "неизвестно";
+    public boolean modded = false;
+    public boolean mobile = false;
+    public int timesJoined = 0, timesKicked = 0;
+    public String[] ips = {}, names = {};
 
     // Для запросов
     public int traceAttempts = 0;
@@ -100,22 +106,16 @@ public class PlayerData {
         }
     }
 
-    public void reset() {
+    public void updateFrom(mindustry.net.Administration.TraceInfo info) {
         stopTraceRequests();
-        online = true;
-        traceAttempts = 0;
-        lastTraceRequest = 0f;
-        if (!uuid.equals("admin?")) {
-            uuid = "Загрузка...";
-        }
-        builds = 0;
-        breaks = 0;
-        configs = 0;
-    }
-
-    public void setUuid(String newUuid) {
-        if (newUuid == null || newUuid.isEmpty()) return;
-        this.uuid = newUuid;
-        stopTraceRequests();
+        this.uuid = info.uuid;
+        this.ip = info.ip;
+        this.locale = info.locale;
+        this.modded = info.modded;
+        this.mobile = info.mobile;
+        this.timesJoined = info.timesJoined;
+        this.timesKicked = info.timesKicked;
+        this.ips = info.ips;
+        this.names = info.names;
     }
 }

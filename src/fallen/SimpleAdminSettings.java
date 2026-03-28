@@ -5,7 +5,7 @@ import mindustry.ui.dialogs.BaseDialog;
 
 public class SimpleAdminSettings extends BaseDialog {
 
-    public SimpleAdminSettings(SimpleAdminList list) {
+    public SimpleAdminSettings() {
         super("Настройки SimpleAdmin");
         addCloseButton();
 

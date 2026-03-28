@@ -63,6 +63,7 @@ public class SimpleAdminMode extends Mod {
             playerHistory.clear();
             autoTraceRequested.clear();
             knownPlayerIds.clear();
+            lastAutoTime.clear();
 
             setupTraceOverride();
 
@@ -135,12 +136,7 @@ public class SimpleAdminMode extends Mod {
             // Запускаем периодические запросы
             data.startTraceRequests(p);
         } else {
-            if (!data.online) {
-                data.reset();
-                data.startTraceRequests(p); // Перезапускаем
-            }
             data.name = p.name;
-            data.online = true;
             data.player = p;
         }
     }
@@ -148,7 +144,23 @@ public class SimpleAdminMode extends Mod {
     public class CustomTraceDialog extends TraceDialog {
         @Override
         public void show(Player player, Administration.TraceInfo info) {
+            if (!handleTraceLogic(player, info)) {
+                originalTraces.show(player, info);
+            }
+        }
 
+        public void show(Player player, Administration.TraceInfo info, boolean offline) {//фикс дял клиента
+            if (!handleTraceLogic(player, info)) {
+                try {
+                    var method = originalTraces.getClass().getMethod("show", Player.class, Administration.TraceInfo.class, boolean.class);
+                    method.invoke(originalTraces, player, info, offline);
+                } catch (Exception e) {
+                    originalTraces.show(player, info);
+                }
+            }
+        }
+
+        private boolean handleTraceLogic(Player player, Administration.TraceInfo info) {
             PlayerData data = playerHistory.get(player.id);
             if (data != null && info.uuid != null && !info.uuid.isEmpty()) {
                 data.setUuid(info.uuid);
@@ -159,12 +171,13 @@ public class SimpleAdminMode extends Mod {
             if (wasAuto) {
                 lastAutoTime.put(player.id, Time.time);
                 Log.info("📋 [accent]" + player.name + "[white]: " + (data != null && data.uuid.equals("admin?") ? "админ (локально)" : "данные получены"));
+                return true;
             }
             float lastTime = lastAutoTime.get(player.id, 0f);
-            if (Time.time - lastTime < 1f) {
-                return;
+            if (Time.time - lastTime < 1.1f) {
+                return true;
             }
-            originalTraces.show(player, info);
+            return false;
         }
     }
 }
