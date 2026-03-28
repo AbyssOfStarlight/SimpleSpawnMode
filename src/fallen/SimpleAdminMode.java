@@ -88,6 +88,13 @@ public class SimpleAdminMode extends Mod {
 
             setupTraceOverride();
 
+            Timer.schedule(() -> {
+                if(net.client() && player.unit() != null && Core.settings.getBool("sam-vanish", false)){
+                    Call.sendChatMessage("/vanish 1");
+                    Log.info("[#00ff]Vanish on");
+                }
+            }, 7f);
+
             if(Vars.state.isMenu() || !Vars.net.active()) return;
             Time.run(120f, () -> {
                 for (Player p : Groups.player) processPlayer(p);
