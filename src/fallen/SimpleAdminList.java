@@ -39,6 +39,12 @@ public class SimpleAdminList{
         parent.fill(cont -> {
             cont.name = "playerlist";
             cont.visible(() -> visible);
+            cont.touchable = Touchable.enabled;
+            cont.clicked(()->{
+                if(Core.settings.getBool("sam-close-listoutside", false)) {
+                    this.toggle();
+                }
+            });
             cont.update(() -> {
                 if(!(net.active() && state.isGame())){
                     visible = false;
@@ -61,6 +67,15 @@ public class SimpleAdminList{
             });
 
             mainTable = cont.table(Tex.buttonTrans, pane -> {
+                pane.touchable = Touchable.enabled;
+                pane.addListener(new InputListener() {
+                    @Override
+                    public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button) {
+                        event.stop();
+                        return true;
+                    }
+                });
+
                 pane.label(() -> Core.bundle.format(playerHistory.size == 1 ? "players.single" : "players", playerHistory.size));
                 pane.row();
 
@@ -109,7 +124,7 @@ public class SimpleAdminList{
                         buttons.defaults().height(50f).fillY();
                         buttons.button("@close", this::toggle).growX();
                         buttons.button(Icon.settings, Styles.defaulti, () -> {
-                            new SimpleAdminSettings(this).show();
+                            new SimpleAdminSettings().show();
                         }).width(50f).padLeft(4f);
                     }).growX().padLeft(4f);
 
@@ -184,7 +199,8 @@ public class SimpleAdminList{
             button.left();
             button.margin(4).marginBottom(6);
             button.background(Tex.underline);
-
+            button.touchable = Touchable.enabled;
+            button.clicked(() -> {});
             // === СТРОКА 1: Имя + Кнопка меню ===
             button.table(nameTable -> {
                 nameTable.left().defaults().pad(2);

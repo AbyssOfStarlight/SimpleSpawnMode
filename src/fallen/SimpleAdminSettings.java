@@ -46,6 +46,22 @@ public class SimpleAdminSettings extends BaseDialog {
 
         cont.check("Отслеживать статистику", Core.settings.getBool("sam-show-stats", false), val -> {
             Core.settings.put("sam-show-stats", val);
-        }).left();
+        }).left().row();
+
+        cont.check("Активировать скрытность?", Core.settings.getBool("sam-vanish", false), val -> {
+            Core.settings.put("sam-vanish", val);
+        }).left().row();
+
+        cont.check("Закрывать инфо-панель кликом вне окна", Core.settings.getBool("sam-close-outside", true), val -> {
+            Core.settings.put("sam-close-outside", val);
+        }).left().row();
+
+        cont.check("Закрывать список при открытии инфо", Core.settings.getBool("sam-close-list", false), val -> {
+            Core.settings.put("sam-close-list", val);
+        }).left().row();
+
+        cont.check("Закрывать список кликом вне окна", Core.settings.getBool("sam-close-listoutside", false), val -> {
+            Core.settings.put("sam-close-listoutside", val);
+        }).left().row();
     }
 }
