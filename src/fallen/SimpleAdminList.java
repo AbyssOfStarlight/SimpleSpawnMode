@@ -387,6 +387,11 @@ public class SimpleAdminList{
                 }
             }).size(340, 300).row();
 
+            t.button(Core.bundle.get("sam.info.stats"), Icon.refresh, () -> {
+                Call.sendChatMessage("/stats " + data.uuid);
+                infoPanel.remove();
+            }).margin(10).growX().height(45).padTop(10).row();
+
             if(data.online) {
                 t.button("ОБНОВИТЬ", Icon.refresh, () -> {
                     Player p = Groups.player.getByID(data.id);

@@ -23,6 +23,8 @@ public class PlayerData {
     public boolean mobile = false;
     public int timesJoined = 0, timesKicked = 0;
     public String[] ips = {}, names = {};
+    public boolean griefWarned = false;
+    public boolean autoFrozen = false;
 
     // Для запросов
     public int traceAttempts = 0;

@@ -106,7 +106,47 @@ public class SimpleAdminMode extends Mod {
             if (net.active() && state.isGame() && Core.graphics.getFrameId() % 60 == 0) {
                 syncPlayers();
             }
+            if (net.active() && state.isGame() && Core.graphics.getFrameId() % 300 == 0) {
+                checkGriefers();
+            }
         });
+    }
+
+    private void checkGriefers() {
+        if (!Core.settings.getBool("sam-ag-enabled", false)) return;
+
+        int minB = Core.settings.getInt("sam-ag-min-build", 10);
+        int maxBr = Core.settings.getInt("sam-ag-max-break", 100);
+        int minJ = Core.settings.getInt("sam-ag-min-joins", 5);
+        int maxK = Core.settings.getInt("sam-ag-max-kicks", 1);
+
+        for (PlayerData data : playerHistory.values()) {
+            if (!data.online || data.uuid.equals("Loading...")) continue;
+
+            // --- ЛОГИКА 1: ПРЕДУПРЕЖДЕНИЕ ---
+            if (!data.griefWarned) {
+                boolean suspicious = (data.builds < minB) &&
+                        (data.breaks > maxBr) &&
+                        (data.timesJoined < minJ) &&
+                        (data.timesKicked >= maxK);
+
+                if (suspicious) {
+                    data.griefWarned = true;
+                    Vars.player.sendMessage(Core.bundle.format("sam.ag.alert", data.name) + "\n" +
+                            Core.bundle.format("sam.ag.stats", data.builds, data.breaks, data.timesJoined, data.timesKicked));
+                }
+            }
+
+            // --- ЛОГИКА 2: АВТО-ФРИЗ (Независимая) ---
+            if (!data.player.admin && !data.autoFrozen && Core.settings.getBool("sam-ag-afr", false)) {
+                if ((data.builds < minB * 2) && data.breaks > maxBr * 2 ) {
+                    data.autoFrozen = true;
+
+                    Call.sendChatMessage("/freeze " + data.uuid);
+                    Vars.player.sendMessage(Core.bundle.format("sam.ag.autoFreeze", data.name, maxBr * 2));
+                }
+            }
+        }
     }
 
     private void setupSettings() {
