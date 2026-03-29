@@ -98,17 +98,17 @@ public class SimpleAdminList{
                                 .growX()
                                 .height(45)
                                 .get();
-                        field.setMessageText("Введите UUID вручную...");
+                        field.setMessageText(Core.bundle.get("sam.list.manualUUID"));
 
                         // Кнопка открытия меню бана для этого UUID
                         manual.button(Icon.waves, Styles.clearNonei, () -> {
                             Call.sendChatMessage("/freeze " + manualUuid);
-                        }).size(45).padLeft(8).tooltip("Заморозить индивидуума");
+                        }).size(45).padLeft(8).tooltip(Core.bundle.get("sam.list.freeze"));
 
                         // Кнопка открытия меню бана для этого UUID
                         manual.button(Icon.hammer, Styles.clearNonei, () -> {
                             if (manualUuid.isEmpty()) {
-                                ui.showInfoFade("[red]UUID слишком короткий");
+                                ui.showInfoFade(Core.bundle.get("sam.info.smallUUID"));
                                 return;
                             }
 
@@ -117,7 +117,7 @@ public class SimpleAdminList{
                             fake.name = "[gray]Manual Entry[]";
 
                             new AdvancedBanDialog(fake, manualUuid).show();
-                        }).size(45).padLeft(8).tooltip("Открыть меню бана для этого UUID");
+                        }).size(45).padLeft(8).tooltip(Core.bundle.get("sam.list.ban"));
 
                     }).padTop(10).row();
                     menu.table(buttons -> {
@@ -189,7 +189,7 @@ public class SimpleAdminList{
             // Разделитель между онлайн/оффлайн
             if (lastWasOnline && !user.online) {
                 content.add().height(8).row();
-                content.add("[white]---Оффлайн---").color(Pal.redLight).center().row();
+                content.add(Core.bundle.get("sam.list.offline")).color(Pal.redLight).center().row();
                 content.add().height(4).row();
             }
             lastWasOnline = user.online;
@@ -213,13 +213,13 @@ public class SimpleAdminList{
                     if(Core.settings.getBool("sam-close-list")){
                         this.toggle();
                     }
-                }).size(button_size).margin(2f).tooltip("Просмотреть сохраненные данные");
+                }).size(button_size).margin(2f).tooltip(Core.bundle.get("sam.list.showSaveData"));
 
                 // Кнопка меню (только для онлайн)
                 if (user.online) {
                     nameTable.button(Icon.menu, Styles.cleari, () -> {
-                        showPlayerMenu(user); // 👈 Вынесли в отдельный метод
-                    }).size(button_size).margin(2f).tooltip("Админ меню");
+                        showPlayerMenu(user);
+                    }).size(button_size).margin(2f).tooltip(Core.bundle.get("sam.list.admActions"));
                 }
             }).growX().row();
 
@@ -227,9 +227,9 @@ public class SimpleAdminList{
             button.table(infoTable -> {
                 infoTable.left().defaults().height(28).pad(1);
                 // UUID
-                String uuidText = user.uuid.equals("admin?") ? "[green]админ" :
-                        user.uuid.equals("Загрузка...") ? "[gray]ожидание..." :
-                                user.uuid.equals("недоступен") ? "[gray]недоступен" :
+                String uuidText = user.uuid.equals("admin?") ? "[green]admin" :
+                        user.uuid.equals("Loading...") ? "[gray]waiting..." :
+                                user.uuid.equals("none") ? "[gray]none" :
                                         user.uuid;
                 infoTable.add("[accent]UUID: [white]" + uuidText).growX().left();
 
@@ -242,16 +242,16 @@ public class SimpleAdminList{
                 // Кнопки действий
                 if (user.online) {
                     infoTable.button(Icon.wavesSmall, Styles.cleari, () -> {
-                        if (!user.uuid.equals("Загрузка...") && !user.uuid.equals("недоступен")) {
+                        if (!user.uuid.equals("Loading...") && !user.uuid.equals("none")) {
                             Call.sendChatMessage("/freeze " + user.uuid);
                         } else {
                             ui.showInfoFade("[red]UUID ещё не получен");
                         }
-                    }).size(button_size).margin(2f).tooltip("Заморозить");
+                    }).size(button_size).margin(2f).tooltip(Core.bundle.get("sam.list.freeze"));
                 }
 
                 infoTable.button(Icon.hammer, Styles.cleari, () -> {
-                    if (!user.uuid.equals("Загрузка...") && !user.uuid.equals("недоступен")) {
+                    if (!user.uuid.equals("Loading...") && !user.uuid.equals("none")) {
                         Player p = Groups.player.getByID(user.id);
                         if (p == null) p = Player.create();
                         p.name = user.name;
@@ -259,7 +259,7 @@ public class SimpleAdminList{
                     } else {
                         ui.showInfoFade("[red]UUID ещё не получен");
                     }
-                }).size(button_size).margin(2f).tooltip("Бан меню");
+                }).size(button_size).margin(2f).tooltip(Core.bundle.get("sam.list.ban"));
             }).growX();
 
             content.add(button).width(buttonWidth).padBottom(4);
@@ -350,7 +350,7 @@ public class SimpleAdminList{
 
             t.table(h -> {
                 h.add(new Image(Icon.infoSmall)).padRight(8);
-                h.add("[accent]Инфо: " + data.name).growX();
+                h.add(Core.bundle.format("sam.info.title", data.name)).growX();
                 h.button(Icon.leftOpen, Styles.cleari, () -> {
                     infoPanel.remove();
                     infoPanel = null;
@@ -367,22 +367,22 @@ public class SimpleAdminList{
             t.pane(p -> {
                 p.defaults().left().growX().margin(2);
 
-                addCopyRow(p, "Name", data.name);
-                addCopyRow(p, "UUID", data.uuid);
-                addCopyRow(p, "IP", data.ip);
-                addCopyRow(p, "Язык", data.locale);
-                addCopyRow(p, "Входы", String.valueOf(data.timesJoined));
-                addCopyRow(p, "Кики", String.valueOf(data.timesKicked));
-                addCopyRow(p, "Мобила", data.mobile ? "Да" : "Нет");
-                addCopyRow(p, "Моды", data.modded ? "Да" : "Нет");
+                addCopyRow(p, Core.bundle.get("sam.info.name"), data.name);
+                addCopyRow(p, Core.bundle.get("sam.info.uuid"), data.uuid);
+                addCopyRow(p, Core.bundle.get("sam.info.ip"), data.ip);
+                addCopyRow(p, Core.bundle.get("sam.info.lang"), data.locale);
+                addCopyRow(p, Core.bundle.get("sam.info.joins"), String.valueOf(data.timesJoined));
+                addCopyRow(p, Core.bundle.get("sam.info.kicks"), String.valueOf(data.timesKicked));
+                addCopyRow(p, Core.bundle.get("sam.info.mobile"), data.mobile ? Core.bundle.get("sam.info.yes") : Core.bundle.get("sam.info.no"));
+                addCopyRow(p, Core.bundle.get("sam.info.modded"), data.modded ? Core.bundle.get("sam.info.yes") : Core.bundle.get("sam.info.no"));
 
                 if(data.names.length > 1) {
-                    p.add("[gray]История имен:").padTop(8).row();
+                    p.add(Core.bundle.get("sam.info.history.name")).padTop(8).row();
                     for(String s : data.names) addCopyRow(p, "", s);
                 }
 
                 if(data.ips.length > 1) {
-                    p.add("[gray]История IP:").padTop(8).row();
+                    p.add(Core.bundle.get("sam.info.history.ip")).padTop(8).row();
                     for(String s : data.ips) addCopyRow(p, "", s);
                 }
             }).size(340, 300).row();
@@ -393,7 +393,7 @@ public class SimpleAdminList{
             }).margin(10).growX().height(45).padTop(10).row();
 
             if(data.online) {
-                t.button("ОБНОВИТЬ", Icon.refresh, () -> {
+                t.button(Core.bundle.get("sam.info.update"), Icon.refresh, () -> {
                     Player p = Groups.player.getByID(data.id);
                     if(p != null) Call.adminRequest(p, Packets.AdminAction.trace, null);
                     infoPanel.remove();
@@ -415,7 +415,7 @@ public class SimpleAdminList{
             b.add(displayText).left().wrap().growX().fontScale(0.9f);
         }, Styles.flatBordert, () -> {
             Core.app.setClipboardText(value);
-            ui.showInfoFade("[accent]" + (label.isEmpty() ? value : label) + " [white]скопирован");
+            ui.showInfoFade("[accent]" + (label.isEmpty() ? value : label) + Core.bundle.get("sam.info.copy"));
         }).growX().height(32).padBottom(2).row();
     }
 

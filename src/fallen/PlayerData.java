@@ -17,8 +17,8 @@ public class PlayerData {
     public int builds = 0;
     public int breaks = 0;
     public int configs = 0;
-    public String ip = "неизвестно";
-    public String locale = "неизвестно";
+    public String ip = "none";
+    public String locale = "nani";
     public boolean modded = false;
     public boolean mobile = false;
     public int timesJoined = 0, timesKicked = 0;
@@ -38,7 +38,7 @@ public class PlayerData {
     public PlayerData(Player p) {
         this.id = p.id;
         this.name = p.name;
-        this.uuid = "Загрузка...";
+        this.uuid = "Loading...";
         this.online = true;
         this.player = p;
     }
@@ -56,7 +56,7 @@ public class PlayerData {
             @Override
             public void run() {
                 // Если UUID внезапно пришел между тиками таймера — стопаем
-                if (uuid != null && !uuid.equals("Загрузка...") && !uuid.equals("admin?") && !uuid.equals("недоступен")) {
+                if (uuid != null && !uuid.equals("Loading...") && !uuid.equals("admin?") && !uuid.equals("none")) {
                     cancel();
                     traceTask = null;
                     return;
@@ -82,15 +82,15 @@ public class PlayerData {
                         uuid = "admin?";
                         Log.info("SimpleAdminMode: @ помечен как 'admin?'", name);
                     } else {
-                        uuid = "недоступен";
+                        uuid = "none";
                     }
                     return;
                 }
 
                 // Если UUID уже есть — останавливаем
                 if (uuid != null && !uuid.isEmpty() &&
-                        !uuid.equals("Загрузка...") && !uuid.equals("admin?") &&
-                        !uuid.equals("недоступен")) {
+                        !uuid.equals("Loading...") && !uuid.equals("admin?") &&
+                        !uuid.equals("none")) {
                     cancel();
                     traceTask = null;
                     return;
@@ -105,6 +105,7 @@ public class PlayerData {
         if (traceTask != null) {
             traceTask.cancel();
             traceTask = null;
+            if(autoTraceRequested != null) autoTraceRequested.remove(id);
         }
     }
 

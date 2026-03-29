@@ -1,5 +1,6 @@
 package fallen;
 
+import arc.Core;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.util.*;
@@ -13,7 +14,7 @@ public class AdvancedBanDialog extends BaseDialog {
     private String currentScope = "here";
 
     public AdvancedBanDialog(Player player, String uuid) {
-        super("Управление: " + Strings.stripColors(player.name));
+        super(Core.bundle.format("sam.ban.title", Strings.stripColors(player.name)));
         addCloseButton();
 
         cont.table(top -> {
@@ -37,39 +38,39 @@ public class AdvancedBanDialog extends BaseDialog {
         cont.pane(table -> {
             table.defaults().pad(4).fillX();
 
-            addRuleRow(table, uuid, "2.1 NSFW", "2.1", 1, 30, 14, "d");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.2_1"), "2.1", 1, 30, 14, "d");
 
-            addRuleRow(table, uuid, "2.2 Спам/флуд", "2.2", 1, 30, 3, "d");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.2_2"), "2.2", 1, 30, 3, "d");
 
-            addRuleRow(table, uuid, "2.3 Оскорбления", "2.3", 3, 30, 3, "d");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.2_3"), "2.3", 3, 30, 3, "d");
 
-            addRuleRow(table, uuid, "2.4 Политика", "2.4", 7, 14, 7, "d");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.2_4"), "2.4", 7, 14, 7, "d");
 
-            addRuleRow(table, uuid, "2.7 Конфликты", "2.7", 7, 30, 7, "d");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.2_7"), "2.7", 7, 30, 7, "d");
 
-            addRuleRow(table, uuid, "3.1.1 Трата ресурсов/юнитов", "3.1.1", 3, 30, 7, "d");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.3_1_1"), "3.1.1", 3, 30, 7, "d");
 
-            addRuleRow(table, uuid, "3.1.2 Удаление построек", "3.1.2", 3, 60, 30, "d");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.3_1_2"), "3.1.2", 3, 60, 30, "d");
 
-            addRuleRow(table, uuid, "3.1.3 Отключение энергоузлов", "3.1.3", 7, 30, 7, "d");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.3_1_3"), "3.1.3", 7, 30, 7, "d");
 
-            addRuleRow(table, uuid, "3.1.4 Поломка вакумов", "3.1.4", 7, 30, 7, "d");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.3_1_4"), "3.1.4", 7, 30, 7, "d");
 
-            addRuleRow(table, uuid, "3.1.5 Мусоросжигатели у ядра", "3.1.5", 0, 0, 0, "perm");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.3_1_5"), "3.1.5", 0, 0, 0, "perm");
 
-            addRuleRow(table, uuid, "3.1.6 Захламление пространства", "3.1.6", 1, 30, 1, "d");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.3_1_6"), "3.1.6", 1, 30, 1, "d");
 
-            addRuleRow(table, uuid, "3.1.7 Нагрузка на сервер", "3.1.7", 0, 0, 0, "perm");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.3_1_7"), "3.1.7", 0, 0, 0, "perm");
 
-            addRuleRow(table, uuid, "3.2 Фрикик", "3.2", 2, 20, 2, "d");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.3_2"), "3.2", 2, 20, 2, "d");
 
-            addRuleRow(table, uuid, "3.3.1 Длинная цепочка маршрутов", "3.3.1", 1, 3, 1, "d");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.3_3_1"), "3.3.1", 1, 3, 1, "d");
 
-            addRuleRow(table, uuid, "3.3.2 Процессоры (порча юнитов)", "3.3.2", 1, 90, 7, "d");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.3_3_2"), "3.3.2", 1, 90, 7, "d");
 
-            addRuleRow(table, uuid, "3.3.3 Неверные расчёты соотношений", "3.3.3", 1, 90, 7, "d");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.3_3_3"), "3.3.3", 1, 90, 7, "d");
 
-            addRuleRow(table, uuid, "3.5 Оскорбление сервера", "3.5", 3, 30, 1, "d");
+            addRuleRow(table, uuid, Core.bundle.get("sam.ban.rule.3_5"), "3.5", 3, 30, 1, "d");
 
 
         }).grow().row();

@@ -38,7 +38,7 @@ public class PlayerStatsTracker {
         });
 
         Events.on(BuildRotateEvent.class, e -> {
-            if(!Core.settings.getBool("sam-show-stats", false) || e.unit.getPlayer() == null) return;
+            if(!Core.settings.getBool("sam-show-stats", false) || e.unit == null || e.unit.getPlayer() == null) return;
             PlayerData data = playerHistory.get(e.unit.getPlayer().id);
             if(data != null) data.configs++;
         });

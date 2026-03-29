@@ -8,6 +8,7 @@ import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.Mod;
 import mindustry.net.Administration;
+import mindustry.ui.dialogs.SettingsMenuDialog;
 import mindustry.ui.dialogs.TraceDialog;
 
 import static mindustry.Vars.*;
@@ -93,7 +94,7 @@ public class SimpleAdminMode extends Mod {
                     Call.sendChatMessage("/vanish 1");
                     Log.info("[#00ff]Vanish on");
                 }
-            }, 7f);
+            }, 5f);
 
             if(Vars.state.isMenu() || !Vars.net.active()) return;
             Time.run(120f, () -> {
@@ -150,34 +151,41 @@ public class SimpleAdminMode extends Mod {
     }
 
     private void setupSettings() {
-        ui.settings.addCategory("SimpleAdmin", Icon.admin, table -> {
-            table.row();
-            table.check("Отслеживать статистику", Core.settings.getBool("sam-show-stats", false), val -> {
+        ui.settings.addCategory(Core.bundle.get("sam.settings.title"), Icon.admin, table -> {
+            table.left().row();
+            table.check(Core.bundle.get("sam.settings.stats"), Core.settings.getBool("sam-show-stats", false), val -> {
                 Core.settings.put("sam-show-stats", val);
             }).left().row();
 
-            table.check("Активировать скрытность?", Core.settings.getBool("sam-vanish", false), val -> {
+            table.check(Core.bundle.get("sam.settings.vanish"), Core.settings.getBool("sam-vanish", false), val -> {
                 Core.settings.put("sam-vanish", val);
             }).left().row();
 
-            table.labelWrap("Размер кнопок").left().row();
-            table.slider(30, 60, 1, Core.settings.getInt("sam-btn-size", 40), val -> {
-                Core.settings.put("sam-btn-size", (int)val);
-            }).row();
+            addSlider(table, "sam.settings.btnSize", "sam-btn-size", 30, 80, 40);
+            addSlider(table, "sam.settings.hudY", "sam-hud-y", 0, 600, 60);
 
-            table.labelWrap("Смещение кнопки HUD (Y)").left().row();
-            table.slider( 0, 600, 5, Core.settings.getInt("sam-hud-y", 60), val -> {
-                Core.settings.put("sam-hud-y", (int)val);
-            }).row();
-
-
-            table.button("Сбросить настройки", () -> {
+            table.button(Core.bundle.get("sam.settings.resetSettings"), () -> {
                 Core.settings.put("sam-show-stats", false);
                 Core.settings.put("sam-btn-size", 40);
                 Core.settings.put("sam-hud-y", 60);
-                ui.showInfoFade("Настройки сброшены");
+                ui.showInfoFade(Core.bundle.get("sam.settings.resetDone"));
             }).margin(10).width(240f).padTop(20f);
         });
+    }
+
+    private void addSlider(arc.scene.ui.layout.Table table, String bundleKey, String settingKey, int min, int max, int def) {
+        table.table(t -> {
+            t.left().defaults().left();
+            t.add(Core.bundle.get(bundleKey)).row();
+
+            t.table(s -> {
+                s.slider(min, max, 1, Core.settings.getInt(settingKey, def), val -> {
+                    Core.settings.put(settingKey, (int)val);
+                }).width(350f).height(50f).padRight(10f);
+
+                s.label(() -> String.valueOf(Core.settings.getInt(settingKey, def))).color(mindustry.graphics.Pal.accent).width(40f);
+            }).row();
+        }).padTop(10f).row();
     }
 
     private void setupTraceOverride() {
@@ -261,18 +269,15 @@ public class SimpleAdminMode extends Mod {
 
         private boolean handleTraceLogic(Player player, Administration.TraceInfo info) {
             PlayerData data = playerHistory.get(player.id);
+            boolean wasAuto = autoTraceRequested.contains(player.id);
             if (data != null && info.uuid != null && !info.uuid.isEmpty()) {
                 data.updateFrom(info);
             }
-
-            boolean wasAuto = autoTraceRequested.remove(player.id);
-            if (wasAuto) {
+            float lastTime = lastAutoTime.get(player.id, 0f);
+            boolean isDuplicate = (Time.time - lastTime < 1.5f);
+            if (wasAuto || isDuplicate) {
                 lastAutoTime.put(player.id, Time.time);
                 Log.info("📋 [accent]" + player.name + "[white]: " + (data != null && data.uuid.equals("admin?") ? "админ (локально)" : "данные получены"));
-                return true;
-            }
-            float lastTime = lastAutoTime.get(player.id, 0f);
-            if (Time.time - lastTime < 1.1f) {
                 return true;
             }
             return false;
