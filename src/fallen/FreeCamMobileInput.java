@@ -6,6 +6,7 @@ import arc.math.geom.Vec2;
 import mindustry.Vars;
 import mindustry.input.MobileInput;
 import mindustry.gen.Unit;
+import mindustry.input.PlaceMode;
 
 import static mindustry.Vars.*;
 
@@ -41,8 +42,20 @@ public class FreeCamMobileInput extends MobileInput {
     }
 
     @Override
+    public void spectate(Unit unit) {
+        if (freeCamActive && unit != null) {
+            camAnchor.set(unit);
+            Core.camera.position.set(camAnchor);
+        }
+        super.spectate(unit);
+    }
+
+    @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        // Обрабатываем паннинг ТОЛЬКО если свободная камера активна
+
+        if (freeCamActive && (lineMode || schematicMode || selecting || mode != PlaceMode.none || droppingItem)) {
+            return super.pan(x, y, deltaX, deltaY);
+        }
         if (!freeCamActive) {
             // Если не наша камера — отдаём обработку родителю
             return super.pan(x, y, deltaX, deltaY);
@@ -91,6 +104,14 @@ public class FreeCamMobileInput extends MobileInput {
         if (active) {
             camAnchor.set(Core.camera.position);
         }
+    }
+
+    @Override
+    public boolean longPress(float x, float y) {
+        if (freeCamActive) {
+            return super.longPress(x, y);
+        }
+        return super.longPress(x, y);
     }
 
     public boolean isFreeCam() {

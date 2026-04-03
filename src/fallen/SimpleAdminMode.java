@@ -32,7 +32,7 @@ public class SimpleAdminMode extends Mod {
             setupTraceOverride(); // Первый запуск
 
             // === ПОДМЕНА INPUT HANDLER ДЛЯ МОБИЛЬНЫХ ===
-            if (Vars.mobile && !(Vars.control.input instanceof FreeCamMobileInput)) {
+            if (Vars.mobile && !(Vars.control.input instanceof FreeCamMobileInput) && Core.settings.getBool("sam-freecam", false)) {
                 MobileInput oldInput = (MobileInput) Vars.control.input;
                 FreeCamMobileInput newInput = new FreeCamMobileInput();
 
@@ -200,6 +200,10 @@ public class SimpleAdminMode extends Mod {
 
             table.check(Core.bundle.get("sam.settings.vanish"), Core.settings.getBool("sam-vanish", false), val -> {
                 Core.settings.put("sam-vanish", val);
+            }).left().row();
+
+            table.check(Core.bundle.get("sam.settings.freecam"), Core.settings.getBool("sam-freecam", false), val -> {
+                Core.settings.put("sam-freecam", val);
             }).left().row();
 
             addSlider(table, "sam.settings.btnSize", "sam-btn-size", 30, 80, 40);
