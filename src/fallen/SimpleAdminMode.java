@@ -1,14 +1,16 @@
 package fallen;
 
 import arc.*;
+import arc.graphics.Color;
 import arc.struct.*;
 import arc.util.*;
 import mindustry.Vars;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
+import mindustry.input.MobileInput;
 import mindustry.mod.Mod;
 import mindustry.net.Administration;
-import mindustry.ui.dialogs.SettingsMenuDialog;
+import mindustry.ui.Styles;
 import mindustry.ui.dialogs.TraceDialog;
 
 import static mindustry.Vars.*;
@@ -25,47 +27,86 @@ public class SimpleAdminMode extends Mod {
     public SimpleAdminMode() {
         Events.on(ClientLoadEvent.class, e -> {
             PlayerStatsTracker.init();
-
             adminList.build(Core.scene.root);
             setupSettings();
             setupTraceOverride(); // Первый запуск
 
+            // === ПОДМЕНА INPUT HANDLER ДЛЯ МОБИЛЬНЫХ ===
+            if (Vars.mobile && !(Vars.control.input instanceof FreeCamMobileInput)) {
+                MobileInput oldInput = (MobileInput) Vars.control.input;
+                FreeCamMobileInput newInput = new FreeCamMobileInput();
+
+                // Копируем важные поля состояния:
+                newInput.block = oldInput.block;
+                newInput.rotation = oldInput.rotation;
+                newInput.mode = oldInput.mode;  // ← важно!
+                newInput.selectPlans.addAll(oldInput.selectPlans);
+                newInput.linePlans.addAll(oldInput.linePlans);
+                newInput.down = oldInput.down;  // ← важно для pan()!
+                newInput.manualShooting = oldInput.manualShooting;
+
+                // Копируем целевые позиции, чтобы не было скачков:
+                newInput.targetPos.set(oldInput.targetPos);
+                newInput.movement.set(oldInput.movement);
+
+                Vars.control.input = newInput;
+            }
+
             ui.hudGroup.fill(t -> {
                 t.name = "sam-hud-button";
                 t.right();
-                // Создаем кнопку и сохраняем ссылку на её ячейку (Cell)
-                var cell = t.button(Icon.admin, () -> {}).size(50f);
-                var btn = cell.get();
-
-                final float[] holdTimer = {0f};
-                final boolean[] longPressedTriggered = {false};
-                final int[] lastY = {-1};
-                btn.update(() -> {
-                    int currentY = Core.settings.getInt("sam-hud-y", 60);
-                    if (lastY[0] != currentY) {
-                        cell.padTop(currentY);
-                        lastY[0] = currentY;
-                        t.invalidateHierarchy();
-                    }
-
-                    // 2. Логика зажатия
-                    if(btn.isPressed()){
-                        holdTimer[0] += Core.graphics.getDeltaTime() * 60f; // Переводим в тики (60 тиков = 1 сек)
-
-                        if(holdTimer[0] > 60f && !longPressedTriggered[0]){
-                            Call.sendChatMessage("/history");
-                            longPressedTriggered[0] = true;
+                t.table(bt -> {
+                    // Создаем кнопку и сохраняем ссылку на её ячейку (Cell)
+                    var adminBtnCell = bt.button(Icon.admin, () -> {
+                    }).size(50f);
+                    var adminBtn = adminBtnCell.get();
+                    final float[] holdTimer = {0f};
+                    final boolean[] longPressedTriggered = {false};
+                    adminBtn.update(() -> {
+                        if (adminBtn.isPressed()) {
+                            holdTimer[0] += Core.graphics.getDeltaTime() * 60f;
+                            if (holdTimer[0] > 60f && !longPressedTriggered[0]) {
+                                Call.sendChatMessage("/history");
+                                longPressedTriggered[0] = true;
+                            }
+                        } else {
+                            holdTimer[0] = 0f;
                         }
-                    } else {
-                        holdTimer[0] = 0f;
-                    }
-                });
+                    });
 
-                btn.clicked(() -> {
-                    if(!longPressedTriggered[0]){
-                        adminList.toggle();
+                    adminBtn.clicked(() -> {
+                        if (!longPressedTriggered[0]) adminList.toggle();
+                        longPressedTriggered[0] = false;
+                    });
+
+
+                    // --- КНОПКА 2: СВОБОДНАЯ КАМЕРА ---
+                    if (Vars.mobile && Core.settings.getBool("sam-freecam", false)) {
+                        bt.row();
+                        bt.button(Icon.move, Styles.clearNoneTogglei, () -> {
+                            if (Vars.control.input instanceof FreeCamMobileInput fi) {
+                                fi.setFreeCam(!fi.isFreeCam());
+                            }
+                        }).update(b -> {
+                            boolean active = false;
+                            if (Vars.control.input instanceof FreeCamMobileInput fi) {
+                                active = fi.isFreeCam();
+                            }
+                            b.setChecked(active);
+                            b.getImage().setColor(active ? Color.cyan : Color.white);
+                        }).size(45f).tooltip("Free Camera");
                     }
-                    longPressedTriggered[0] = false;
+
+                    // --- ЛОГИКА СМЕЩЕНИЯ (Y) ---
+                    final int[] lastY = {-1};
+                    bt.update(() -> {
+                        int currentY = Core.settings.getInt("sam-hud-y", 60);
+                        if (lastY[0] != currentY) {
+                            bt.margin(currentY, 0, 0, 10f);
+                            lastY[0] = currentY;
+                            bt.invalidateHierarchy();
+                        }
+                    });
                 });
             });
         });
