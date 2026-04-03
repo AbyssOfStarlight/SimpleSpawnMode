@@ -232,6 +232,7 @@ public class SimpleAdminList{
                                 user.uuid.equals("none") ? "[gray]none" :
                                         user.uuid;
                 infoTable.add("[accent]UUID: [white]" + uuidText).growX().left();
+                if(Core.settings.getBool("sam-fastlang", false)){infoTable.add("[accent] L: [white]" + user.locale).right();}
 
                 if(Core.settings.getBool("sam-show-stats", false)) {
                     infoTable.button(st -> {

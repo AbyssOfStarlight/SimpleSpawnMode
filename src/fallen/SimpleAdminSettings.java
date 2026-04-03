@@ -44,6 +44,7 @@ public class SimpleAdminSettings extends BaseDialog {
 
                 table.check(Core.bundle.get("sam.settings.stats"), Core.settings.getBool("sam-show-stats", false), val -> Core.settings.put("sam-show-stats", val)).row();
                 table.check(Core.bundle.get("sam.settings.vanish"), Core.settings.getBool("sam-vanish", false), val -> Core.settings.put("sam-vanish", val)).row();
+                table.check(Core.bundle.get("sam.settings.fastlang"), Core.settings.getBool("sam-fastlang", false), val -> Core.settings.put("sam-fastlang", val)).row();
 
                 // --- СЕКЦИЯ: АНТИ-ГРИФ ---
                 header(table, "sam.settings.antiGrief");
