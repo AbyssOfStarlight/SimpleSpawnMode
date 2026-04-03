@@ -106,13 +106,7 @@ public class FreeCamMobileInput extends MobileInput {
         }
     }
 
-    @Override
-    public boolean longPress(float x, float y) {
-        if (freeCamActive) {
-            return super.longPress(x, y);
-        }
-        return super.longPress(x, y);
-    }
+
 
     public boolean isFreeCam() {
         return freeCamActive;
